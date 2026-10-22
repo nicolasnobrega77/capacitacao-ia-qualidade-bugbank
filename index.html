@@ -1,0 +1,1445 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Nicolas Nobrega">
+  <meta name="description" content="Material acadêmico de Gestão de Tecnologia sobre Qualidade de Software e IA Aplicada, por Nicolas Nobrega.">
+  <title>Gestão de Tecnologia — Qualidade de Software e IA Aplicada</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f7f4ec;
+      --muted: #aeb8c7;
+      --paper: #101823;
+      --panel: #182536;
+      --panel-2: #213249;
+      --line: rgba(255, 255, 255, 0.13);
+      --accent: #6ee7b7;
+      --accent-2: #f8c66a;
+      --danger: #ff8d8d;
+      --blue: #7dd3fc;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+      --radius: 22px;
+      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 14% 8%, rgba(110, 231, 183, 0.11), transparent 28rem),
+        radial-gradient(circle at 88% 86%, rgba(125, 211, 252, 0.08), transparent 30rem),
+        #09111a;
+      color: var(--ink);
+      font-family: var(--font);
+    }
+
+    body { overflow-x: hidden; }
+
+    button, input, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .topbar {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px clamp(18px, 4vw, 56px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(9, 17, 26, 0.84);
+      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent), var(--blue));
+      box-shadow: 0 0 0 5px rgba(110, 231, 183, 0.08);
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .brand-mark::after {
+      content: "QA";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #07131a;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .brand-copy { min-width: 0; }
+    .brand-title { font-weight: 780; line-height: 1.1; }
+    .brand-subtitle { color: var(--muted); font-size: 0.78rem; margin-top: 3px; }
+
+    .top-actions { display: flex; align-items: center; gap: 9px; }
+
+    .counter {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      padding: 7px 11px;
+      white-space: nowrap;
+    }
+
+    .counter { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+    .icon-button {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .icon-button:hover,
+    .icon-button:focus-visible { border-color: var(--accent); outline: none; }
+
+    .stage {
+      width: min(1220px, calc(100% - 32px));
+      margin: 22px auto;
+      display: grid;
+      place-items: stretch;
+    }
+
+    .slide {
+      display: none;
+      min-height: calc(100vh - 176px);
+      padding: clamp(24px, 4.5vw, 64px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.035), transparent 40%),
+        var(--paper);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      animation: rise 260ms ease-out;
+    }
+
+    .slide.active { display: block; }
+
+    .slide::before {
+      content: attr(data-kicker);
+      position: absolute;
+      top: 22px;
+      right: 28px;
+      color: rgba(255,255,255,0.16);
+      font-weight: 900;
+      font-size: clamp(2.8rem, 8vw, 7rem);
+      letter-spacing: -0.08em;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    h1, h2, h3 { margin: 0; text-wrap: balance; }
+
+    h1 {
+      max-width: 900px;
+      font-size: clamp(2.7rem, 7vw, 6.4rem);
+      line-height: 0.98;
+      letter-spacing: -0.065em;
+    }
+
+    h2 {
+      max-width: 900px;
+      font-size: clamp(2rem, 4.8vw, 4.4rem);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+      margin-bottom: 18px;
+    }
+
+    h3 { font-size: 1.05rem; line-height: 1.25; }
+
+    .lead {
+      max-width: 820px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.8vw, 1.3rem);
+      line-height: 1.65;
+    }
+
+    .hero-accent { color: var(--accent); }
+    .author { margin-top: 34px; font-size: 1rem; color: var(--muted); }
+    .author strong { color: var(--ink); }
+
+    .hero-meta,
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px;
+      padding: 9px 13px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .grid-2,
+    .grid-3 {
+      display: grid;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.035);
+    }
+
+    .card p,
+    .card li { color: var(--muted); line-height: 1.55; }
+    .card p { margin: 9px 0 0; }
+    .card ul, .card ol { margin: 12px 0 0; padding-left: 20px; }
+    .card li + li { margin-top: 7px; }
+    .card-accent { border-color: rgba(110,231,183,0.38); }
+    .card-warn { border-color: rgba(248,198,106,0.38); }
+
+    .number {
+      display: inline-grid;
+      place-items: center;
+      min-width: 30px;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 9px;
+      background: var(--accent);
+      color: #07131a;
+      font-weight: 900;
+      margin-bottom: 13px;
+    }
+
+    .callout {
+      margin-top: 24px;
+      padding: 17px 19px;
+      border-left: 3px solid var(--accent-2);
+      background: rgba(248,198,106,0.07);
+      color: #f6e8c9;
+      line-height: 1.55;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .field { display: grid; gap: 8px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: 0.82rem; font-weight: 700; }
+
+    input,
+    textarea {
+      width: 100%;
+      color: var(--ink);
+      background: #0c1520;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 13px;
+      resize: vertical;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(110,231,183,0.08); }
+    textarea { min-height: 100px; line-height: 1.5; }
+    textarea.tall { min-height: 190px; }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 56px 1fr;
+      gap: 14px;
+      align-items: stretch;
+      margin-top: 28px;
+    }
+
+    .comparison .arrow {
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      font-size: 1.7rem;
+    }
+
+    .mini-label {
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .example-bad { color: var(--danger); }
+    .example-good { color: var(--accent); }
+
+    pre,
+    .code {
+      margin: 18px 0 0;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #080f17;
+      color: #d5e5ed;
+      font-family: var(--mono);
+      font-size: 0.86rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 12px 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.025);
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .check-item input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--accent); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--ink);
+      font-weight: 780;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button:hover,
+    .button:focus-visible { border-color: var(--accent); outline: none; transform: translateY(-1px); }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: #07131a; }
+    .button.secondary { background: var(--blue); border-color: var(--blue); color: #07131a; }
+    .button.danger { color: #ffc7c7; }
+
+    .footer {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 12px clamp(18px, 4vw, 56px) 18px;
+    }
+
+    .nav-button {
+      min-width: 110px;
+      min-height: 43px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--panel);
+      color: var(--ink);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .nav-button:disabled { opacity: 0.35; cursor: not-allowed; }
+    .nav-button:not(:disabled):hover { border-color: var(--accent); }
+
+    .progress-track {
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--blue));
+      transition: width 220ms ease;
+    }
+
+    .kbd { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 82px;
+      z-index: 40;
+      background: #eefbf6;
+      color: #0b2a20;
+      padding: 12px 16px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: 180ms ease;
+      font-weight: 750;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .source-note { color: var(--muted); font-size: 0.78rem; margin-top: 14px; }
+    .source-note a { color: var(--blue); }
+
+    /* Tema “laboratório de qualidade”: inspirado em ilustrações editoriais
+       geométricas, sem reproduzir a arte ou a identidade da referência. */
+    :root {
+      color-scheme: light;
+      --ink: #111827;
+      --muted: #354052;
+      --paper: #fffaf0;
+      --panel: #ffffff;
+      --panel-2: #ffe277;
+      --line: #111827;
+      --accent: #a8db72;
+      --accent-2: #ffb45b;
+      --danger: #e9445f;
+      --blue: #48c7ed;
+      --coral: #ff6472;
+      --cream: #fffaf0;
+      --shadow: 9px 9px 0 #111827;
+      --radius: 28px;
+      --font: "Arial Rounded MT Bold", "Trebuchet MS", Arial, sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    html,
+    body {
+      background-color: var(--blue);
+      background-image: radial-gradient(rgba(17, 24, 39, 0.14) 1.2px, transparent 1.2px);
+      background-size: 22px 22px;
+      color: var(--ink);
+    }
+
+    ::selection { background: var(--panel-2); color: var(--ink); }
+
+    .topbar {
+      min-height: 72px;
+      border-bottom: 3px solid var(--ink);
+      background: rgba(255, 250, 240, 0.96);
+      backdrop-filter: none;
+    }
+
+    .brand { gap: 14px; }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--ink);
+      border-radius: 8px 14px 9px 13px;
+      background: var(--coral);
+      box-shadow: 4px 4px 0 var(--ink);
+      transform: rotate(-4deg);
+    }
+
+    .brand-mark::after {
+      color: var(--ink);
+      font-size: 0.78rem;
+      transform: rotate(4deg);
+    }
+
+    .brand-title {
+      font-weight: 900;
+      letter-spacing: -0.025em;
+    }
+
+    .brand-subtitle { color: var(--muted); font-weight: 700; }
+
+    .counter {
+      border: 2px solid var(--ink);
+      color: var(--ink);
+      background: #fff;
+      font-weight: 850;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .counter { background: var(--panel-2); }
+
+    .icon-button {
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+      font-weight: 900;
+    }
+
+    .icon-button:hover,
+    .icon-button:focus-visible {
+      border-color: var(--ink);
+      outline: 3px solid #fff;
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    .stage {
+      width: min(1260px, calc(100% - 42px));
+      margin: 28px auto 24px;
+    }
+
+    .slide {
+      min-height: calc(100vh - 190px);
+      border: 3px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--cream);
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .slide:nth-child(4n + 1) { background: #dff6ff; }
+    .slide:nth-child(4n + 2) { background: #fff8dd; }
+    .slide:nth-child(4n + 3) { background: #f1fbdc; }
+    .slide:nth-child(4n + 4) { background: #ffe8e7; }
+
+    .slide:first-child {
+      background: var(--blue);
+      padding-top: clamp(30px, 4.5vw, 62px);
+    }
+
+    .slide > * { position: relative; z-index: 1; }
+
+    .slide::before {
+      top: 24px;
+      right: 28px;
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border: 3px solid var(--ink);
+      border-radius: 47% 53% 45% 55% / 55% 44% 56% 45%;
+      background: #fff;
+      box-shadow: 4px 4px 0 var(--ink);
+      color: var(--ink);
+      font-size: 1rem;
+      letter-spacing: 0;
+      transform: rotate(5deg);
+      z-index: 2;
+    }
+
+    .slide::after {
+      content: "";
+      position: absolute;
+      width: 105px;
+      height: 105px;
+      right: -38px;
+      bottom: -42px;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      background: var(--accent-2);
+      z-index: 0;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translate(10px, 8px) rotate(0.15deg); }
+      to { opacity: 1; transform: translate(0, 0) rotate(0); }
+    }
+
+    .hero-layout {
+      min-height: calc(100vh - 320px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(330px, 0.88fr);
+      gap: clamp(26px, 5vw, 74px);
+      align-items: center;
+    }
+
+    .hero-copy { min-width: 0; }
+
+    .hero-visual {
+      width: 100%;
+      max-width: 520px;
+      justify-self: center;
+      filter: drop-shadow(9px 10px 0 rgba(17, 24, 39, 0.14));
+      transform: rotate(1.2deg);
+    }
+
+    .hero-visual svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+    .eyebrow {
+      gap: 9px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 3px 3px 0 var(--ink);
+      color: var(--ink);
+      padding: 8px 13px 8px 10px;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.09em;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow::before {
+      width: 13px;
+      height: 13px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--coral);
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: var(--ink);
+      font-weight: 950;
+    }
+
+    h1 {
+      max-width: 760px;
+      font-size: clamp(2.65rem, 6.3vw, 5.8rem);
+      line-height: 0.92;
+      letter-spacing: -0.072em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      max-width: 940px;
+      font-size: clamp(2.15rem, 4.7vw, 4.45rem);
+      line-height: 0.98;
+      letter-spacing: -0.06em;
+    }
+
+    h3 { font-size: 1.08rem; }
+
+    .lead {
+      color: var(--muted);
+      font-weight: 650;
+      line-height: 1.58;
+    }
+
+    .hero-accent {
+      color: #fff;
+      text-shadow: 3px 3px 0 var(--ink), -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink);
+    }
+
+    .author { color: var(--ink); font-weight: 750; }
+    .author strong { color: var(--ink); }
+
+    .published-reading {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 3px dashed var(--ink);
+    }
+
+    .published-reading h3 { margin-bottom: 5px; }
+
+    .reading-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 24px;
+      margin: 12px 0 0;
+      padding-left: 20px;
+    }
+
+    .reading-list a {
+      color: #075f7b;
+      font-weight: 850;
+      line-height: 1.35;
+    }
+
+    .pill {
+      border: 2px solid var(--ink);
+      background: #fff;
+      border-radius: 999px;
+      padding: 9px 14px;
+      color: var(--ink);
+      font-weight: 800;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .pill:nth-child(2n) { background: var(--panel-2); }
+
+    .card {
+      border: 3px solid var(--ink);
+      border-radius: 18px 23px 17px 22px;
+      background: #fff;
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+
+    .card:nth-child(2n) { transform: rotate(0.35deg); }
+    .card p,
+    .card li { color: var(--muted); }
+    .card strong { color: var(--ink); }
+    .card-accent { border-color: var(--ink); background: #f3ffe6; }
+    .card-warn { border-color: var(--ink); background: #fff1b8; }
+
+    .number {
+      min-width: 34px;
+      height: 34px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--coral);
+      color: var(--ink);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .callout {
+      border: 3px solid var(--ink);
+      border-left-width: 9px;
+      border-radius: 12px 18px 14px 17px;
+      background: var(--panel-2);
+      color: var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+    }
+
+    .field label { color: var(--ink); font-weight: 850; }
+
+    input,
+    textarea {
+      color: var(--ink);
+      background: #fff;
+      border: 2px solid var(--ink);
+      border-radius: 11px 15px 12px 14px;
+      box-shadow: 3px 3px 0 rgba(17, 24, 39, 0.18);
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+      outline: 3px solid var(--panel-2);
+    }
+
+    .comparison .arrow {
+      color: var(--ink);
+      font-weight: 950;
+      font-size: 2.15rem;
+    }
+
+    .mini-label {
+      color: var(--ink);
+      font-weight: 950;
+    }
+
+    .example-bad { color: #c62f49; }
+    .example-good { color: #397d2b; }
+
+    pre,
+    .code {
+      border: 3px solid var(--ink);
+      border-radius: 14px 19px 15px 18px;
+      background: #202a44;
+      color: #fffaf0;
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+
+    .check-item {
+      border: 2px solid var(--ink);
+      border-radius: 11px 15px 12px 14px;
+      background: #fff;
+      color: var(--muted);
+      box-shadow: 3px 3px 0 rgba(17, 24, 39, 0.18);
+    }
+
+    .check-item input { accent-color: var(--coral); }
+
+    .button {
+      min-height: 46px;
+      border: 2px solid var(--ink);
+      border-radius: 10px 14px 11px 13px;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+      font-weight: 900;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      border-color: var(--ink);
+      outline: 3px solid #fff;
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    .button.primary { background: var(--coral); border-color: var(--ink); color: var(--ink); }
+    .button.secondary { background: var(--accent); border-color: var(--ink); color: var(--ink); }
+    .button.danger { color: #a51e36; }
+
+    .footer {
+      padding-top: 14px;
+      padding-bottom: 22px;
+    }
+
+    .nav-button {
+      border: 2px solid var(--ink);
+      border-radius: 10px 15px 11px 14px;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+    }
+
+    .nav-button:not(:disabled):hover {
+      border-color: var(--ink);
+      background: var(--panel-2);
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .progress-track {
+      height: 9px;
+      border: 2px solid var(--ink);
+      background: #fff;
+    }
+
+    .progress-bar { background: var(--coral); }
+    .kbd { color: var(--ink); font-weight: 750; }
+
+    .toast {
+      border: 2px solid var(--ink);
+      border-radius: 11px 15px 12px 14px;
+      background: var(--accent);
+      color: var(--ink);
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+
+    .source-note { color: var(--muted); font-weight: 650; }
+    .source-note a { color: #075f7b; font-weight: 850; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    @media (max-width: 980px) {
+      .hero-layout { grid-template-columns: 1fr; }
+      .hero-visual { max-width: 430px; margin-top: 8px; }
+      h1 { max-width: 900px; }
+    }
+
+    @media (max-width: 820px) {
+      .kbd { display: none; }
+      .topbar { position: static; }
+      .stage { width: min(100% - 20px, 760px); margin: 10px auto; }
+      .slide { min-height: calc(100vh - 152px); padding: 24px 20px 30px; border-radius: 16px; }
+      .slide::before { top: 16px; right: 18px; font-size: 3.1rem; }
+      .grid-2, .grid-3, .form-grid, .comparison { grid-template-columns: 1fr; }
+      .comparison .arrow { transform: rotate(90deg); min-height: 28px; }
+      .footer { grid-template-columns: 1fr 1fr; }
+      .progress-track { grid-column: 1 / -1; grid-row: 1; }
+      .nav-button { min-width: 0; }
+      .hero-layout { min-height: auto; gap: 24px; }
+      .hero-visual { max-width: 320px; }
+      .slide { box-shadow: 6px 6px 0 var(--ink); }
+      .slide::before { width: 46px; height: 46px; }
+      .reading-list { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      :root { color-scheme: light; }
+      body { background: white; color: #111; }
+      .topbar, .footer, .actions, .toast { display: none !important; }
+      .stage { display: block; width: 100%; margin: 0; }
+      .slide, .slide.active {
+        display: block !important;
+        min-height: auto;
+        page-break-after: always;
+        border: 0;
+        box-shadow: none;
+        background: white;
+        color: #111;
+      }
+      .card, input, textarea, pre, .code, .check-item { background: white; color: #222; border-color: #bbb; }
+      .lead, .card p, .card li, .check-item, .source-note, .field label { color: #444; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div class="brand-copy">
+          <div class="brand-title">Qualidade de Software e IA</div>
+          <div class="brand-subtitle">Gestão de Tecnologia · Capacitação prática</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span class="counter" id="slideCounter" aria-live="polite">01 / 12</span>
+        <button class="icon-button" id="fullscreenButton" type="button" aria-label="Ativar tela cheia" title="Tela cheia">⛶</button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+      <section class="slide active" data-kicker="00" aria-labelledby="title-00">
+        <div class="hero-layout">
+          <div class="hero-copy">
+            <div class="eyebrow">Gestão de Tecnologia · Trabalho acadêmico</div>
+            <h1 id="title-00"><span class="hero-accent">Qualidade de Software</span> e IA Aplicada</h1>
+            <p class="lead">Aprenda a transformar requisitos em comportamentos verificáveis, escrever casos de teste atômicos, investigar evidências e usar IA sem terceirizar a análise crítica.</p>
+            <p class="author">Por <strong>Nicolas Nobrega</strong></p>
+            <div class="hero-meta">
+              <span class="pill">60–90 minutos</span>
+              <span class="pill">Foco manual</span>
+              <span class="pill">Login e dados</span>
+              <span class="pill">Relatório exportável</span>
+            </div>
+            <div class="actions">
+              <button class="button primary" type="button" data-go="1">Iniciar capacitação →</button>
+            </div>
+          </div>
+          <div class="hero-visual" aria-hidden="true">
+            <svg viewBox="0 0 540 450" role="img">
+              <path d="M56 341c-22 17-34 39-36 65M77 355c-12 15-18 32-18 51" fill="none" stroke="#111827" stroke-width="7" stroke-linecap="round"/>
+              <g transform="rotate(-3 246 206)">
+                <rect x="48" y="72" width="350" height="258" rx="24" fill="#fffaf0" stroke="#111827" stroke-width="8"/>
+                <path d="M48 96c0-13 11-24 24-24h302c13 0 24 11 24 24v43H48V96Z" fill="#ff6472" stroke="#111827" stroke-width="8"/>
+                <circle cx="84" cy="106" r="9" fill="#ffe277" stroke="#111827" stroke-width="5"/>
+                <circle cx="116" cy="106" r="9" fill="#a8db72" stroke="#111827" stroke-width="5"/>
+                <circle cx="148" cy="106" r="9" fill="#48c7ed" stroke="#111827" stroke-width="5"/>
+                <path d="M174 213c-23-22-67-11-67 26 0 39 34 64 67 64s67-25 67-64c0-37-44-48-67-26Z" fill="#a8db72" stroke="#111827" stroke-width="8" stroke-linejoin="round"/>
+                <path d="M153 207c-4-23 10-41 21-41s25 18 21 41M142 239h64M174 213v86M121 221l-22-17M227 221l22-17M116 255l-27 5M232 255l27 5M126 283l-22 21M222 283l22 21" fill="none" stroke="#111827" stroke-width="7" stroke-linecap="round"/>
+                <circle cx="158" cy="234" r="5" fill="#111827"/>
+                <circle cx="190" cy="234" r="5" fill="#111827"/>
+              </g>
+              <g transform="rotate(9 385 300)">
+                <circle cx="374" cy="286" r="79" fill="#ffb45b" stroke="#111827" stroke-width="9"/>
+                <circle cx="374" cy="286" r="51" fill="#dff6ff" stroke="#111827" stroke-width="6"/>
+                <path d="M427 344l72 70" fill="none" stroke="#111827" stroke-width="28" stroke-linecap="round"/>
+                <path d="M427 344l72 70" fill="none" stroke="#ff6472" stroke-width="15" stroke-linecap="round"/>
+              </g>
+              <g transform="translate(390 36) rotate(6)">
+                <path d="M59 0 73 16l21-2 4 21 18 11-10 19 7 20-20 8-8 20-21-6-18 12-13-17-22-1-1-22-15-15 14-17-2-22 21-5L40 1Z" fill="#fff" stroke="#111827" stroke-width="6" stroke-linejoin="round"/>
+                <text x="57" y="68" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">QA</text>
+              </g>
+              <path d="M417 155c27-18 54-22 82-12M432 177c25-7 48-4 69 10" fill="none" stroke="#111827" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="01" aria-labelledby="title-01">
+        <div class="eyebrow">Antes de começar</div>
+        <h2 id="title-01">O que você vai produzir</h2>
+        <p class="lead">A atividade termina com uma documentação própria, baseada no que você realmente observou.</p>
+        <div class="grid-3">
+          <article class="card card-accent"><span class="number">1</span><h3>Especificação</h3><p>História de usuário, regras confirmadas, ambiguidades e perguntas de refinamento.</p></article>
+          <article class="card card-accent"><span class="number">2</span><h3>Testes manuais</h3><p>Casos atômicos com dados, ações, resultados esperados e comportamentos identificados.</p></article>
+          <article class="card card-accent"><span class="number">3</span><h3>Evidências</h3><p>Observações da interface e do DevTools, decisões sobre sugestões da IA e conclusão.</p></article>
+        </div>
+        <div class="callout"><strong>Fora do escopo:</strong> automação de testes, exploração ofensiva, uso de dados reais e qualquer ação fora da aplicação pública de treinamento.</div>
+        <div class="form-grid">
+          <div class="field"><label for="participantName">Seu nome</label><input id="participantName" data-field="participantName" placeholder="Nome do participante"></div>
+          <div class="field"><label for="activityDate">Data da atividade</label><input id="activityDate" data-field="activityDate" type="date"></div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="02" aria-labelledby="title-02">
+        <div class="eyebrow">Ambiente público</div>
+        <h2 id="title-02">Conheça o BugBank</h2>
+        <p class="lead">O BugBank é uma aplicação aberta criada para planejamento e prática de testes. Você utilizará somente contas e dados fictícios.</p>
+        <div class="grid-2">
+          <article class="card card-accent">
+            <h3>Aplicação em uso</h3>
+            <p>Abra o site, leia os requisitos e explore inicialmente as telas de cadastro e login.</p>
+            <div class="actions">
+              <a class="button primary" href="https://bugbank.netlify.app/" target="_blank" rel="noreferrer">Abrir BugBank ↗</a>
+              <a class="button" href="https://bugbank.netlify.app/requirements" target="_blank" rel="noreferrer">Ler requisitos ↗</a>
+            </div>
+          </article>
+          <article class="card card-warn">
+            <h3>Limites éticos</h3>
+            <ul>
+              <li>Use nomes, e-mails e senhas fictícios.</li>
+              <li>Não teste sistemas reais sem autorização.</li>
+              <li>Não publique credenciais, tokens ou dados pessoais.</li>
+              <li>O objetivo é observar e documentar, não explorar.</li>
+            </ul>
+          </article>
+        </div>
+        <p class="source-note">Fonte do ambiente: <a href="https://github.com/jhonatasmatos/bugbank-ui" target="_blank" rel="noreferrer">repositório público do BugBank</a>. A apresentação funciona sem instalação; é necessária internet apenas para acessar a aplicação externa.</p>
+      </section>
+
+      <section class="slide" data-kicker="03" aria-labelledby="title-03">
+        <div class="eyebrow">Etapa 1</div>
+        <h2 id="title-03">Compreenda a história de usuário</h2>
+        <p class="lead">Expresse pessoa, necessidade e valor. Não transforme detalhes ainda desconhecidos em regras.</p>
+        <div class="callout"><strong>Responsabilidade e propósito:</strong> a criação e a priorização da história de usuário são responsabilidades do Product Owner. Nesta capacitação, o QA exercita sua escrita para compreender intenção, valor, regras e lacunas antes de elaborar casos de teste determinísticos — sem substituir a atuação do PO.</div>
+        <pre>Como [pessoa ou perfil]
+quero [necessidade]
+para [valor ou resultado].</pre>
+        <div class="form-grid">
+          <div class="field full"><label for="userStory">Sua história de usuário</label><textarea id="userStory" data-field="userStory" placeholder="Como usuário cadastrado, quero..."></textarea></div>
+          <div class="field"><label for="sourceRules">Regras confirmadas e suas fontes</label><textarea id="sourceRules" data-field="sourceRules" placeholder="Registre somente o que está descrito nos requisitos ou foi confirmado."></textarea></div>
+          <div class="field"><label for="initialQuestions">Dúvidas iniciais</label><textarea id="initialQuestions" data-field="initialQuestions" placeholder="O que ainda impede escrever um resultado objetivo?"></textarea></div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="04" aria-labelledby="title-04">
+        <div class="eyebrow">Etapa 2</div>
+        <h2 id="title-04">Separe o esperado do identificado</h2>
+        <p class="lead">O esperado vem da regra confirmada. O identificado vem da execução e da evidência. A diferença pode ser defeito, dúvida ou necessidade de refinamento.</p>
+        <div class="comparison">
+          <article class="card">
+            <div class="mini-label">Comportamento esperado</div>
+            <p>O que deveria acontecer conforme requisito, critério aprovado ou princípio de qualidade explicitado.</p>
+          </article>
+          <div class="arrow" aria-hidden="true">→</div>
+          <article class="card">
+            <div class="mini-label">Comportamento identificado</div>
+            <p>O que realmente ocorreu, acompanhado de massa utilizada, contexto, data e evidência.</p>
+          </article>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label for="expectedBehaviour">Comportamentos esperados confirmados</label><textarea id="expectedBehaviour" data-field="expectedBehaviour" placeholder="Um comportamento por linha e sua fonte."></textarea></div>
+          <div class="field"><label for="identifiedBehaviour">Comportamentos identificados</label><textarea id="identifiedBehaviour" data-field="identifiedBehaviour" placeholder="Registre apenas após executar os testes."></textarea></div>
+          <div class="field full"><label for="evidenceRegister">Evidências e condições da execução</label><textarea id="evidenceRegister" data-field="evidenceRegister" placeholder="Navegador, data, massa fictícia, sequência executada e nome dos arquivos de evidência."></textarea></div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="05" aria-labelledby="title-05">
+        <div class="eyebrow">Etapa 3</div>
+        <h2 id="title-05">Remova ambiguidades pelo refinamento</h2>
+        <p class="lead">Quando o resultado não pode ser observado objetivamente, ainda existe uma pergunta a responder.</p>
+        <div class="grid-2">
+          <article class="card card-warn">
+            <h3 class="example-bad">Evite</h3>
+            <ul>
+              <li>“Apresentar mensagem adequada.”</li>
+              <li>“O login deve funcionar corretamente.”</li>
+              <li>“Responder rapidamente.”</li>
+              <li>“Os dados devem estar seguros.”</li>
+            </ul>
+          </article>
+          <article class="card card-accent">
+            <h3 class="example-good">Pergunte</h3>
+            <ul>
+              <li>Qual texto, posição e duração da mensagem?</li>
+              <li>Qual tela ou elemento comprova o acesso?</li>
+              <li>Qual tempo máximo é aceitável?</li>
+              <li>Quais dados são sensíveis e onde não podem aparecer?</li>
+            </ul>
+          </article>
+        </div>
+        <div class="form-grid">
+          <div class="field full"><label for="refinementQuestions">Perguntas de refinamento</label><textarea class="tall" id="refinementQuestions" data-field="refinementQuestions" placeholder="Trecho ambíguo → pergunta → decisão necessária → responsável pela resposta"></textarea></div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="06" aria-labelledby="title-06">
+        <div class="eyebrow">Etapa 4</div>
+        <h2 id="title-06">Escreva casos de teste atômicos</h2>
+        <p class="lead">Cada caso deve testar uma intenção principal. Cada passo executa uma ação e possui um resultado observável correspondente.</p>
+        <div class="grid-3">
+          <article class="card"><span class="number">A</span><h3>Uma intenção</h3><p>Não misture login válido, senha inválida e campos vazios no mesmo caso.</p></article>
+          <article class="card"><span class="number">B</span><h3>Dados explícitos</h3><p>Use massa fictícia suficiente para outro participante reproduzir a execução.</p></article>
+          <article class="card"><span class="number">C</span><h3>Resultado observável</h3><p>Evite “funciona corretamente”. Informe o elemento ou estado que será conferido.</p></article>
+        </div>
+        <pre>CT-001 — [FUNCTIONAL] Validar acesso com credenciais cadastradas
+Objetivo: Esse teste objetiva validar...
+Precondição: estado que já precisa existir
+Passo 1: uma ação executável
+Dados: massa fictícia necessária
+Resultado esperado: uma resposta observável</pre>
+        <div class="form-grid">
+          <div class="field full"><label for="atomicCases">Seus casos atômicos</label><textarea class="tall" id="atomicCases" data-field="atomicCases" placeholder="Escreva CT-001, CT-002 e CT-003. Separe e-mail vazio, senha vazia e credencial inválida em casos diferentes."></textarea></div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="07" aria-labelledby="title-07">
+        <div class="eyebrow">Etapa 5</div>
+        <h2 id="title-07">Execute manualmente e registre</h2>
+        <p class="lead">Aprenda o produto pelo uso. Registre o contexto antes de decidir se algo é defeito.</p>
+        <div class="checklist" aria-label="Checklist de execução">
+          <label class="check-item"><input type="checkbox" data-check="validLogin"><span>Executei o acesso com uma conta fictícia previamente cadastrada.</span></label>
+          <label class="check-item"><input type="checkbox" data-check="invalidPassword"><span>Executei um caso alterando somente a senha.</span></label>
+          <label class="check-item"><input type="checkbox" data-check="emptyEmail"><span>Executei um caso mantendo somente o e-mail vazio.</span></label>
+          <label class="check-item"><input type="checkbox" data-check="emptyPassword"><span>Executei um caso mantendo somente a senha vazia.</span></label>
+          <label class="check-item"><input type="checkbox" data-check="evidence"><span>Registrei resultado, contexto e evidência sem dados reais.</span></label>
+        </div>
+        <div class="form-grid">
+          <div class="field full"><label for="manualExecution">Registro da execução manual</label><textarea class="tall" id="manualExecution" data-field="manualExecution" placeholder="Caso → esperado → identificado → evidência → status → dúvida ou risco"></textarea></div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="08" aria-labelledby="title-08">
+        <div class="eyebrow">Etapa 6</div>
+        <h2 id="title-08">Observe possíveis exposições no DevTools</h2>
+        <p class="lead">Use uma conta fictícia e faça uma investigação passiva. Não altere dados, não force acessos e não tente explorar vulnerabilidades.</p>
+        <div class="grid-2">
+          <article class="card card-accent">
+            <h3>Charter exploratório</h3>
+            <p>Explorar armazenamento e tráfego do login com dados fictícios para descobrir se informações sensíveis aparecem no Local Storage, Session Storage, Console ou Network.</p>
+            <p><strong>Timebox:</strong> 15 minutos.</p>
+          </article>
+          <article class="card">
+            <h3>O que observar</h3>
+            <ul>
+              <li>Senha ou credencial em texto legível;</li>
+              <li>Dados pessoais desnecessários;</li>
+              <li>Tokens expostos em URL ou log;</li>
+              <li>Mensagens técnicas excessivas;</li>
+              <li>Persistência após sair da conta.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="callout"><strong>Não conclua “vulnerabilidade” apenas pela aparência.</strong> Registre o local, o dado fictício, a reprodução e o risco potencial. A classificação exige contexto e validação técnica.</div>
+        <div class="form-grid">
+          <div class="field full"><label for="devtoolsFindings">Achados no DevTools</label><textarea class="tall" id="devtoolsFindings" data-field="devtoolsFindings" placeholder="Local observado → dado encontrado → reprodução → evidência → risco potencial → dúvida técnica"></textarea></div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="09" aria-labelledby="title-09">
+        <div class="eyebrow">Etapa 7</div>
+        <h2 id="title-09">Use IA para questionar, não para decidir</h2>
+        <p class="lead">Forneça somente requisitos públicos e dados fictícios. Peça à IA para separar fato, hipótese, dúvida e sugestão.</p>
+        <div class="code" id="promptText">Atue como apoio de análise de qualidade. Com base somente nos requisitos e evidências que fornecerei, identifique ambiguidades, riscos e perguntas de refinamento. Sugira casos de teste atômicos, com uma intenção por caso. Não invente mensagens, regras ou resultados. Classifique cada item como: regra confirmada, comportamento identificado, hipótese ou dúvida. Informe quando não houver evidência suficiente para registrar um defeito.</div>
+        <div class="actions">
+          <button class="button primary" id="copyPromptButton" type="button">Copiar prompt</button>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label for="aiSuggestions">Sugestões recebidas da IA</label><textarea id="aiSuggestions" data-field="aiSuggestions" placeholder="Registre apenas as sugestões relevantes."></textarea></div>
+          <div class="field"><label for="humanDecisions">Sua decisão sobre cada sugestão</label><textarea id="humanDecisions" data-field="humanDecisions" placeholder="Aceita, rejeitada ou depende de refinamento — explique por quê."></textarea></div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="10" aria-labelledby="title-10">
+        <div class="eyebrow">Documentação</div>
+        <h2 id="title-10">Revise antes de concluir</h2>
+        <p class="lead">Seu relatório deve permitir que outra pessoa compreenda o raciocínio sem depender de uma conversa com você.</p>
+        <div class="grid-2">
+          <article class="card">
+            <h3>Critérios de qualidade</h3>
+            <div class="checklist">
+              <label class="check-item"><input type="checkbox" data-check="traceability"><span>Cada esperado possui uma fonte ou foi marcado como hipótese.</span></label>
+              <label class="check-item"><input type="checkbox" data-check="atomicity"><span>Cada caso possui uma única intenção principal.</span></label>
+              <label class="check-item"><input type="checkbox" data-check="observable"><span>Os resultados são objetivos e observáveis.</span></label>
+              <label class="check-item"><input type="checkbox" data-check="privacy"><span>As evidências não contêm dados reais ou segredos.</span></label>
+            </div>
+          </article>
+          <article class="card card-accent">
+            <h3>O relatório exportado reunirá</h3>
+            <ul>
+              <li>História e regras confirmadas;</li>
+              <li>Esperado versus identificado;</li>
+              <li>Perguntas de refinamento;</li>
+              <li>Casos atômicos e execução;</li>
+              <li>Achados no DevTools;</li>
+              <li>Sugestões da IA e decisões humanas;</li>
+              <li>Conclusão do participante.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="form-grid">
+          <div class="field full"><label for="conclusion">Conclusão e aprendizados</label><textarea class="tall" id="conclusion" data-field="conclusion" placeholder="O que você aprendeu sobre requisitos, comportamento, evidências, riscos e uso crítico da IA?"></textarea></div>
+        </div>
+      </section>
+
+      <section class="slide" data-kicker="11" aria-labelledby="title-11">
+        <div class="eyebrow">Conclusão</div>
+        <h2 id="title-11">Exporte e envie para receber feedback</h2>
+        <p class="lead">Baixe sua documentação em Markdown, revise as evidências e envie o material para Nicolas Nobrega. Ele auxiliará na identificação de oportunidades de melhoria.</p>
+        <div class="grid-2">
+          <article class="card card-accent">
+            <h3>1. Baixe o relatório</h3>
+            <p>O arquivo é gerado no seu navegador. Nenhuma resposta é enviada automaticamente.</p>
+            <div class="actions"><button class="button primary" id="exportButton" type="button">Baixar relatório .md</button></div>
+          </article>
+          <article class="card">
+            <h3>2. Envie por e-mail</h3>
+            <p>Anexe o relatório e suas capturas já revisadas. Remova qualquer dado sensível antes do envio.</p>
+            <div class="actions"><a class="button secondary" id="emailButton" href="mailto:nicolas.nobre@hotmail.com?subject=Capacitacao%20IA%20e%20Qualidade%20-%20BugBank">Preparar e-mail</a></div>
+          </article>
+        </div>
+        <div class="callout"><strong>Contato para feedback:</strong> nicolas.nobre@hotmail.com. O retorno tem caráter colaborativo e busca apontar clareza, atomicidade, rastreabilidade, riscos e oportunidades de refinamento.</div>
+        <div class="published-reading">
+          <h3>Ler mais sobre o tema:</h3>
+          <p>Continue o estudo com reflexões práticas sobre qualidade e experiência profissional em QA.</p>
+          <ul class="reading-list">
+            <li><a href="https://www.tabnews.com.br/nicolasqa/qualidade-como-estrategia-uma-reflexao-para-qas-em-formacao" target="_blank" rel="noreferrer">Qualidade como estratégia ↗</a></li>
+            <li><a href="https://www.tabnews.com.br/nicolasqa/qa-quando-um-incidente-transforma-estudo-em-experiencia-ciclo-de-sanidade-carga-concorrencia" target="_blank" rel="noreferrer">Incidente, sanidade, carga e concorrência ↗</a></li>
+            <li><a href="https://www.linkedin.com/feed/update/urn:li:activity:7490083736185659392/" target="_blank" rel="noreferrer">A evolução de QA vai além da automação ↗</a></li>
+            <li><a href="https://www.linkedin.com/feed/update/urn:li:activity:7472665117885849600/" target="_blank" rel="noreferrer">Evolução do produto: aprendizados técnicos e de negócio ↗</a></li>
+          </ul>
+        </div>
+        <div class="actions">
+          <button class="button" type="button" data-go="0">Rever apresentação</button>
+          <button class="button danger" id="resetButton" type="button">Limpar minhas respostas</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <button class="nav-button" id="previousButton" type="button" aria-label="Slide anterior">← Anterior</button>
+      <div>
+        <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="kbd" style="text-align:center; margin-top:7px;">Use ← → para navegar · suas respostas ficam somente neste navegador</div>
+      </div>
+      <button class="nav-button" id="nextButton" type="button" aria-label="Próximo slide">Próximo →</button>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "capacitacao-ia-qualidade-bugbank-v1";
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const previousButton = document.getElementById("previousButton");
+      const nextButton = document.getElementById("nextButton");
+      const slideCounter = document.getElementById("slideCounter");
+      const progressBar = document.getElementById("progressBar");
+      const toast = document.getElementById("toast");
+      let current = 0;
+      let toastTimer;
+
+      const state = loadState();
+
+      function loadState() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { fields: {}, checks: {} };
+        } catch (_error) {
+          return { fields: {}, checks: {} };
+        }
+      }
+
+      function saveState() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_error) {}
+      }
+
+      function showToast(message) {
+        clearTimeout(toastTimer);
+        toast.textContent = message;
+        toast.classList.add("show");
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+      }
+
+      function showSlide(index) {
+        current = Math.max(0, Math.min(index, slides.length - 1));
+        slides.forEach((slide, position) => {
+          const active = position === current;
+          slide.classList.toggle("active", active);
+          slide.setAttribute("aria-hidden", String(!active));
+        });
+        previousButton.disabled = current === 0;
+        nextButton.disabled = current === slides.length - 1;
+        slideCounter.textContent = `${String(current + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
+        progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+        try {
+          history.replaceState(null, "", `#${current + 1}`);
+        } catch {
+          // Alguns navegadores restringem o histórico quando o arquivo é aberto via file://.
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function isTypingTarget(target) {
+        return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target.isContentEditable;
+      }
+
+      function restoreInputs() {
+        document.querySelectorAll("[data-field]").forEach((element) => {
+          const key = element.dataset.field;
+          if (Object.prototype.hasOwnProperty.call(state.fields, key)) element.value = state.fields[key];
+          element.addEventListener("input", () => {
+            state.fields[key] = element.value;
+            saveState();
+          });
+        });
+
+        document.querySelectorAll("[data-check]").forEach((element) => {
+          const key = element.dataset.check;
+          element.checked = Boolean(state.checks[key]);
+          element.addEventListener("change", () => {
+            state.checks[key] = element.checked;
+            saveState();
+          });
+        });
+
+        if (!state.fields.activityDate) {
+          const dateInput = document.querySelector('[data-field="activityDate"]');
+          dateInput.value = new Date().toISOString().slice(0, 10);
+          state.fields.activityDate = dateInput.value;
+          saveState();
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+        const helper = document.createElement("textarea");
+        helper.value = text;
+        helper.setAttribute("readonly", "");
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand("copy");
+        helper.remove();
+        return Promise.resolve();
+      }
+
+      function section(title, value) {
+        return `## ${title}\n\n${value && value.trim() ? value.trim() : "_Não preenchido._"}\n\n`;
+      }
+
+      function checklistMarkdown() {
+        const labels = Array.from(document.querySelectorAll("[data-check]")).map((checkbox) => {
+          const label = checkbox.closest("label")?.innerText.trim() || checkbox.dataset.check;
+          return `- [${checkbox.checked ? "x" : " "}] ${label}`;
+        });
+        return labels.join("\n");
+      }
+
+      function buildReport() {
+        const f = state.fields;
+        return `# Gestão de Tecnologia: Qualidade de Software e IA Aplicada
+
+## Relatório da capacitação prática no BugBank
+
+**Participante:** ${f.participantName || "Não informado"}  
+**Data:** ${f.activityDate || "Não informada"}  
+**Autor da capacitação:** Nicolas Nobrega  
+**Aplicação analisada:** https://bugbank.netlify.app/
+
+> Este relatório deve utilizar apenas massa fictícia. Evidências com credenciais, tokens ou dados pessoais precisam ser removidas ou anonimizadas antes do compartilhamento.
+
+${section("1. História de usuário", f.userStory)}${section("2. Regras confirmadas e fontes", f.sourceRules)}${section("3. Dúvidas iniciais", f.initialQuestions)}${section("4. Comportamentos esperados", f.expectedBehaviour)}${section("5. Comportamentos identificados", f.identifiedBehaviour)}${section("6. Evidências e condições da execução", f.evidenceRegister)}${section("7. Perguntas de refinamento", f.refinementQuestions)}${section("8. Casos de teste atômicos", f.atomicCases)}${section("9. Execução manual", f.manualExecution)}${section("10. Achados no DevTools", f.devtoolsFindings)}${section("11. Sugestões da IA", f.aiSuggestions)}${section("12. Decisões humanas sobre as sugestões", f.humanDecisions)}${section("13. Conclusão e aprendizados", f.conclusion)}## 14. Checklist de revisão
+
+${checklistMarkdown()}
+
+## 15. Solicitação de feedback
+
+Material preparado para revisão colaborativa de Nicolas Nobrega pelo e-mail nicolas.nobre@hotmail.com.
+`;
+      }
+
+      function downloadReport() {
+        const report = buildReport();
+        const blob = new Blob([report], { type: "text/markdown;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const participant = (state.fields.participantName || "participante")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-zA-Z0-9]+/g, "-")
+          .replace(/^-|-$/g, "")
+          .toLowerCase();
+        link.href = url;
+        link.download = `relatorio-capacitacao-bugbank-${participant || "participante"}.md`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        showToast("Relatório gerado. Revise antes de enviar.");
+      }
+
+      previousButton.addEventListener("click", () => showSlide(current - 1));
+      nextButton.addEventListener("click", () => showSlide(current + 1));
+
+      document.querySelectorAll("[data-go]").forEach((button) => {
+        button.addEventListener("click", () => showSlide(Number(button.dataset.go)));
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (isTypingTarget(event.target)) return;
+        if (event.key === "ArrowRight" || event.key === "PageDown") showSlide(current + 1);
+        if (event.key === "ArrowLeft" || event.key === "PageUp") showSlide(current - 1);
+        if (event.key === "Home") showSlide(0);
+        if (event.key === "End") showSlide(slides.length - 1);
+      });
+
+      document.getElementById("fullscreenButton").addEventListener("click", async () => {
+        try {
+          if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+          else await document.exitFullscreen();
+        } catch (_error) { showToast("O navegador não permitiu a tela cheia."); }
+      });
+
+      document.getElementById("copyPromptButton").addEventListener("click", () => {
+        copyText(document.getElementById("promptText").innerText)
+          .then(() => showToast("Prompt copiado."))
+          .catch(() => showToast("Não foi possível copiar automaticamente."));
+      });
+
+      document.getElementById("exportButton").addEventListener("click", downloadReport);
+
+      document.getElementById("resetButton").addEventListener("click", () => {
+        if (!confirm("Deseja apagar todas as respostas salvas neste navegador?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        document.querySelectorAll("[data-field]").forEach((element) => { element.value = ""; });
+        document.querySelectorAll("[data-check]").forEach((element) => { element.checked = false; });
+        state.fields = {};
+        state.checks = {};
+        showToast("Respostas locais removidas.");
+      });
+
+      restoreInputs();
+      const initialHash = Number(location.hash.replace("#", ""));
+      showSlide(Number.isInteger(initialHash) && initialHash > 0 ? initialHash - 1 : 0);
+    })();
+  </script>
+</body>
+</html>
